@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: customer_segmentation_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-segmentation_db}
+      POSTGRES_USER: ${DB_USER:-analyst}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-analytics_2024}
+    ports:
+      - "${DB_PORT:-5434}:5432"
+    volumes:
+      - pgdata_segments:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-analyst} -d ${DB_NAME:-segmentation_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  pgdata_segments:
+    name: segmentation_pgdata
